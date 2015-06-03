@@ -1,0 +1,6 @@
+c:\users\chris\documents\visual studio 2013\Projects\ImageStenography\ImageStenography\bin\ImageStenography.dll.config
+c:\users\chris\documents\visual studio 2013\Projects\ImageStenography\ImageStenography\bin\ImageStenography.dll
+c:\users\chris\documents\visual studio 2013\Projects\ImageStenography\ImageStenography\bin\ImageStenography.pdb
+c:\users\chris\documents\visual studio 2013\Projects\ImageStenography\ImageStenography\obj\Debug\ImageStenography.dll
+c:\users\chris\documents\visual studio 2013\Projects\ImageStenography\ImageStenography\obj\Debug\ImageStenography.pdb
+c:\users\chris\documents\visual studio 2013\Projects\ImageStenography\ImageStenography\obj\Debug\ImageStenography.csprojResolveAssemblyReference.cache

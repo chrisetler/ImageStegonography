@@ -1,3 +1,8 @@
+#Image files
+ImageStenography/images/
+ImageStenography/images/*
+
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
