@@ -22,14 +22,6 @@
             
         </div>
             <br />
-        <div>
-            <!--Select whether to conceal or recover an image -->
-            <asp:RadioButtonList ID="typeOfOperation" runat="server" OnSelectedIndexChanged="optionSelectedChanged" AutoPostBack="true" >
-                <asp:ListItem Text="Conceal an Image" Value="conceal" Enabled="true"></asp:ListItem>
-                <asp:ListItem Text="Recover an image" Value="recover" Enabled="true"></asp:ListItem>
-            </asp:RadioButtonList>
-            <br />
-        </div>
         <asp:Panel ID="secondImageUploadPanel" runat="server" Visible="false">
             <!--Upload the image to conceal. Only visible when the conceal option is selected -->
             Image to conceal: <asp:TextBox ID="concealedImageURL" runat="server" AutoPostBack="true" OnTextChanged="concealedImageURLAdded"></asp:TextBox> <br />
@@ -38,6 +30,18 @@
             <asp:Label ID="concealedImageUploadedText" Text="upload an image" runat="server"></asp:Label> 
             
         </asp:Panel>
+        <br />
+        <div>
+            <!--Select whether to conceal or recover an image -->
+            <asp:RadioButtonList ID="typeOfOperation" runat="server" OnSelectedIndexChanged="optionSelectedChanged" AutoPostBack="true" >
+                <asp:ListItem Text="Conceal an Image" Value="conceal" Enabled="true"></asp:ListItem>
+                <asp:ListItem Text="Recover an image" Value="recover" Enabled="true"></asp:ListItem>
+                <asp:ListItem Text="See how an image will look when concealed" Vale="test" Enabled="true"></asp:ListItem>
+            </asp:RadioButtonList>
+            <br />
+            <asp:CheckBox ID="normalizeOption" Text="Normalize" runat="server"  />
+        </div>
+        
         <br />
         <div>
             <!--Select the number of bits the concealed image should take up in each color -->

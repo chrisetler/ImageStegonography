@@ -20,6 +20,7 @@ namespace ImageStenography
         private const int IMAGE_WIDTH = 500;
         protected void Page_Load(object sender, EventArgs e)
         {
+
             imageTest.Visible = false;
             imageTwo.Visible = false;
 
@@ -116,9 +117,9 @@ namespace ImageStenography
 
                         //algorithm re-implemented with lockbits
                         Rectangle rect1 = new Rectangle(0, 0, concealingBitmap.Width, concealingBitmap.Height);
-                        System.Drawing.Imaging.BitmapData concealingBMPData = concealingBitmap.LockBits(rect1, System.Drawing.Imaging.ImageLockMode.ReadWrite, concealingBitmap.PixelFormat);
+                        System.Drawing.Imaging.BitmapData concealingBMPData = concealingBitmap.LockBits(rect1, System.Drawing.Imaging.ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
                         rect1 = new Rectangle(0, 0, concealedBitmap.Width, concealedBitmap.Height);
-                        System.Drawing.Imaging.BitmapData concealedBMPData = concealedBitmap.LockBits(rect1, System.Drawing.Imaging.ImageLockMode.ReadWrite, concealedBitmap.PixelFormat);
+                        System.Drawing.Imaging.BitmapData concealedBMPData = concealedBitmap.LockBits(rect1, System.Drawing.Imaging.ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
                         
                         //get an array of bytes for each image
                         int concealingBytesLength = Math.Abs(concealingBMPData.Stride) * concealingBitmap.Height;
@@ -182,13 +183,21 @@ namespace ImageStenography
                     //re-implemented with lockbits
                     //takes image into an array of RGB byte values
                     Rectangle rect1 = new Rectangle(0, 0, concealingBitmap.Width, concealingBitmap.Height);
-                    System.Drawing.Imaging.BitmapData concealingBMPData = concealingBitmap.LockBits(rect1, System.Drawing.Imaging.ImageLockMode.ReadWrite, concealingBitmap.PixelFormat);
+                    System.Drawing.Imaging.BitmapData concealingBMPData = concealingBitmap.LockBits(rect1, System.Drawing.Imaging.ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
                     int concealingBytesLength = Math.Abs(concealingBMPData.Stride) * concealingBitmap.Height;
                     byte[] concealingBytes = new byte[concealingBytesLength];
                     System.Runtime.InteropServices.Marshal.Copy(concealingBMPData.Scan0, concealingBytes, 0, concealingBytesLength);
                     for (int i = 0; i < concealingBytesLength; i++)
                     {
                         concealingBytes[i] = (byte)(concealingBytes[i] << (8 - numberOfBits));
+                    }
+                    //if normalization is selected, make the image brighter
+                    if (normalizeOption.Checked)
+                    {
+                        for (int i = 0; i < concealingBytesLength; i++)
+                        {
+                            concealingBytes[i] += (byte)(255 >> (numberOfBits + 1));
+                        }
                     }
                     //unlock and save
                     System.Runtime.InteropServices.Marshal.Copy(concealingBytes, 0, concealingBMPData.Scan0, concealingBytesLength);
@@ -209,6 +218,50 @@ namespace ImageStenography
                     concealingBitmap.Dispose();
 
                 }
+                //test how a concealed image will look when recovered
+                else if (typeOfOperation.SelectedIndex == 2)
+                {
+                    //get the image
+                    Bitmap concealingBitmap = new Bitmap(IMAGE_UPLOAD_DIRECTORY + concealingImageUploadedText.Text);
+                    int numberOfBits = (encodingBits.SelectedIndex);
+
+                    //re-implemented with lockbits
+                    //takes image into an array of RGB byte values
+                    Rectangle rect1 = new Rectangle(0, 0, concealingBitmap.Width, concealingBitmap.Height);
+                    System.Drawing.Imaging.BitmapData concealingBMPData = concealingBitmap.LockBits(rect1, System.Drawing.Imaging.ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+                    int concealingBytesLength = Math.Abs(concealingBMPData.Stride) * concealingBitmap.Height;
+                    byte[] concealingBytes = new byte[concealingBytesLength];
+                    System.Runtime.InteropServices.Marshal.Copy(concealingBMPData.Scan0, concealingBytes, 0, concealingBytesLength);
+                    for (int i = 0; i < concealingBytesLength; i++)
+                    {
+                        concealingBytes[i] = (byte)(concealingBytes[i] & (byte)(255 << (8 - numberOfBits)));
+                    }
+                    if (normalizeOption.Checked)
+                    {
+                        for (int i = 0; i < concealingBytesLength; i++)
+                        {
+                            concealingBytes[i] += (byte)(255 >> (numberOfBits + 1));
+                        }
+                    }
+                    //unlock and save
+                    System.Runtime.InteropServices.Marshal.Copy(concealingBytes, 0, concealingBMPData.Scan0, concealingBytesLength);
+                    concealingBitmap.UnlockBits(concealingBMPData);
+                    concealingBitmap.Save(IMAGE_UPLOAD_DIRECTORY + "output1.png", ImageFormat.Png);
+
+                    //concealingBitmap.Save(IMAGE_UPLOAD_DIRECTORY + "output1.png");
+                    //show the images
+                    imageTest.Visible = true;
+                    imageTwo.Visible = true;
+                    imageTest.ImageUrl = IMAGE_PATH_SHORT + concealingImageUploadedText.Text;
+                    imageTwo.ImageUrl = IMAGE_PATH_SHORT + "output1.png";
+                    imageTest.Width = IMAGE_WIDTH;
+                    imageTest.Height = concealingBitmap.Height * IMAGE_WIDTH / concealingBitmap.Width;
+                    imageTwo.Width = imageTest.Width;
+                    imageTwo.Height = imageTest.Height;
+
+                    concealingBitmap.Dispose();
+
+                }
                 
             }
         }
@@ -220,8 +273,11 @@ namespace ImageStenography
             string fileName = Path.GetFileName(remoteImgPathWithoutQuery);
             string localPath = IMAGE_UPLOAD_DIRECTORY + fileName;
             WebClient webClient = new WebClient();
-            //create a temp file in case someone wants to download a file already on the server
-            webClient.DownloadFile(urlStr, IMAGE_UPLOAD_DIRECTORY+"temp.png");
+
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+
+            webClient.DownloadFile(remoteImgPathUri, IMAGE_UPLOAD_DIRECTORY + "temp.png");
             FileStream tempFile = new FileStream(IMAGE_UPLOAD_DIRECTORY + "temp.png", FileMode.Open);
             FileStream finalFile = new FileStream(localPath, FileMode.Create);
             tempFile.CopyTo(finalFile);

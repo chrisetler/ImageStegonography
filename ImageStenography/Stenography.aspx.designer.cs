@@ -58,15 +58,6 @@ namespace ImageStenography {
         protected global::System.Web.UI.WebControls.Label concealingImageUploadedText;
         
         /// <summary>
-        /// typeOfOperation control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList typeOfOperation;
-        
-        /// <summary>
         /// secondImageUploadPanel control.
         /// </summary>
         /// <remarks>
@@ -110,6 +101,24 @@ namespace ImageStenography {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label concealedImageUploadedText;
+        
+        /// <summary>
+        /// typeOfOperation control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButtonList typeOfOperation;
+        
+        /// <summary>
+        /// normalizeOption control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox normalizeOption;
         
         /// <summary>
         /// encodingBits control.
